@@ -42,10 +42,11 @@ public class ClickhouseE2ECase extends FlinkContainerTestEnviroment {
                 "INSERT INTO test (id, name, float32_column, date_column, datetime_column, array_column) VALUES (4, 'Name4', 4.4, '2022-01-04', '2022-01-04 03:00:00', [10, 11, 12]);");
         proxy.execute(
                 "INSERT INTO test (id, name, float32_column, date_column, datetime_column, array_column) VALUES (5, 'Name5', 5.5, '2022-01-05', '2022-01-05 04:00:00', [13, 14, 15]);");
-        // proxy.execute("insert into test values (2, 'kiki');");
+
         List<String> sqlLines = new ArrayList<>();
         sqlLines.add(
-                "create table clickhouse_test (id int, name varchar,float32_column FLOAT,\n"
+                "create table clickhouse_test (id int, name varchar,float32_column FLOAT,"
+                        + "    date_column Date,\n"
                         + "    datetime_column TIMESTAMP(3),\n"
                         + "    array_column ARRAY<INT>) with ('connector' = 'clickhouse',\n"
                         + "  'url' = '"
@@ -57,6 +58,7 @@ public class ClickhouseE2ECase extends FlinkContainerTestEnviroment {
                         + ");");
         sqlLines.add(
                 "create table test (id int, name varchar,float32_column FLOAT,\n"
+                        + "date_column Date,\n"
                         + "    datetime_column TIMESTAMP(3),\n"
                         + "    array_column ARRAY<INT>) with ('connector' = 'clickhouse',\n"
                         + "  'url' = '"
@@ -78,15 +80,15 @@ public class ClickhouseE2ECase extends FlinkContainerTestEnviroment {
         waitUntilJobRunning(Duration.of(1, ChronoUnit.MINUTES));
         List<String> expectedResult =
                 Arrays.asList(
-                        "1,Name1,1.1,2022-01-01 00:00:00,[1,2,3]",
-                        "2,Name2,2.2,2022-01-02 01:00:00,[4,5,6]",
-                        "3,Name3,3.3,2022-01-03 02:00:00,[7,8,9]",
-                        "4,Name4,4.4,2022-01-04 03:00:00,[10,11,12]",
-                        "5,Name5,5.5,2022-01-05 04:00:00,[13,14,15]");
+                        "1,Name1,1.1,2022-01-01,2022-01-01 00:00:00,[1,2,3]",
+                        "2,Name2,2.2,2022-01-02,2022-01-02 01:00:00,[4,5,6]",
+                        "3,Name3,3.3,2022-01-03,2022-01-03 02:00:00,[7,8,9]",
+                        "4,Name4,4.4,2022-01-04,2022-01-04 03:00:00,[10,11,12]",
+                        "5,Name5,5.5,2022-01-05,2022-01-05 04:00:00,[13,14,15]");
         proxy.checkResultWithTimeout(
                 expectedResult,
                 "test_insert",
-                Arrays.asList("id", "name", "float32_column", "datetime_column", "array_column"),
+                Arrays.asList("id", "name", "float32_column", "date_column", "datetime_column", "array_column"),
                 60000);
     }
 

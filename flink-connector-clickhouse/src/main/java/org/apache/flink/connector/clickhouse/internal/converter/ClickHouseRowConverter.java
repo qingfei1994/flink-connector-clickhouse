@@ -127,7 +127,7 @@ public class ClickHouseRowConverter implements Serializable {
                                         new BigDecimal((BigInteger) val, 0), precision, scale)
                                 : DecimalData.fromBigDecimal((BigDecimal) val, precision, scale);
             case DATE:
-                return val -> (int) ((Date) val).toLocalDate().toEpochDay();
+                return val -> (int) ((LocalDate)val).toEpochDay();
             case TIME_WITHOUT_TIME_ZONE:
                 return val -> (int) (((Time) val).toLocalTime().toNanoOfDay() / 1_000_000L);
             case TIMESTAMP_WITH_TIME_ZONE:
